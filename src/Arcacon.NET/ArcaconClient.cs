@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Arcacon.NET.Browser;
 using Arcacon.NET.Exceptions;
 using Arcacon.NET.Http;
@@ -13,11 +12,6 @@ namespace Arcacon.NET;
 /// </summary>
 public class ArcaconClient : IArcaconClient, IAsyncDisposable
 {
-    private static readonly JsonSerializerOptions s_javaScriptObjectNotationSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
     private readonly ArcaconHttpClient _httpClient;
     private readonly HttpClient? _innerHttpClient;
     private readonly bool _ownsHttpClient;
@@ -223,12 +217,12 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         if (string.IsNullOrWhiteSpace(publicPackageStickerPayload))
             throw new ArcaconParsingException("공개 아카콘 API 응답이 비어있습니다.");
 
-        var publicArcaconStickers = JsonSerializer.Deserialize<List<PublicArcaconStickerPayload>>(
+        var publicArcaconStickerPayloads = System.Text.Json.JsonSerializer.Deserialize(
             publicPackageStickerPayload,
-            s_javaScriptObjectNotationSerializerOptions)
+            ArcaconJavaScriptObjectNotationSerializerContext.Default.ListPublicArcaconStickerPayload)
             ?? throw new ArcaconParsingException("공개 아카콘 API 응답을 해석할 수 없습니다.");
 
-        var imageUrlByStickerId = publicArcaconStickers
+        var imageUrlByStickerId = publicArcaconStickerPayloads
             .Where(publicArcaconSticker => publicArcaconSticker.Id > 0 && !string.IsNullOrWhiteSpace(publicArcaconSticker.ImageUrl))
             .ToDictionary(
                 publicArcaconSticker => publicArcaconSticker.Id,
@@ -271,12 +265,5 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
 
         GC.SuppressFinalize(this);
         return ValueTask.CompletedTask;
-    }
-
-    private sealed class PublicArcaconStickerPayload
-    {
-        public int Id { get; set; }
-
-        public string? ImageUrl { get; set; }
     }
 }
