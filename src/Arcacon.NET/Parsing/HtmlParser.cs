@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
 using Arcacon.NET.Exceptions;
 using Arcacon.NET.Models;
@@ -101,23 +102,20 @@ internal static class HtmlParser
                 Packages = []
             };
 
-            // 패키지 목록: .emoticon-col > a[href^="/e/"]
-            var packageElements = document.QuerySelectorAll(".emoticon-col a[href^='/e/']");
-            foreach (var anchor in packageElements)
+            var packageListContainer = FindPackageListContainer(document);
+            var packageAnchors = packageListContainer?.QuerySelectorAll(".emoticon-col a[href^='/e/']")
+                ?? document.QuerySelectorAll(".emoticon-col a[href^='/e/']");
+            foreach (var anchor in packageAnchors)
             {
                 var href = anchor.GetAttribute("href") ?? string.Empty;
                 var packageIndex = ExtractPackageIndexFromHref(href);
                 if (packageIndex <= 0) continue;
 
-                var thumbnailElement = anchor.QuerySelector("img[src]");
                 var titleElement = anchor.QuerySelector(".title");
                 var makerElement = anchor.QuerySelector(".maker");
                 var saleCountElement = anchor.QuerySelector(".count span");
 
-                var rawThumbnailUrl = thumbnailElement?.GetAttribute("src") ?? string.Empty;
-                var thumbnailUrl = rawThumbnailUrl.StartsWith("//", StringComparison.Ordinal)
-                    ? HttpsPrefix + rawThumbnailUrl
-                    : rawThumbnailUrl;
+                var thumbnailUrl = ExtractThumbnailUrlFromPackageAnchor(anchor);
 
                 _ = int.TryParse(
                     saleCountElement?.TextContent.Trim().Replace(",", ""), out var saleCount);
@@ -245,5 +243,29 @@ internal static class HtmlParser
         if (match.Success && int.TryParse(match.Groups[1].Value, out var page)) return page;
 
         return 0;
+    }
+
+    private static string ExtractThumbnailUrlFromPackageAnchor(IElement anchor)
+    {
+        var thumbnailElement = anchor.QuerySelector(".emoticon > img[loading='lazy'][src]")
+            ?? anchor.QuerySelector(".emoticon img[loading='lazy'][src]")
+            ?? anchor.QuerySelector(".emoticon > img[src]")
+            ?? anchor.QuerySelector(".emoticon img[src]");
+
+        var rawThumbnailUrl = thumbnailElement?.GetAttribute("src") ?? string.Empty;
+        return rawThumbnailUrl.StartsWith("//", StringComparison.Ordinal)
+            ? HttpsPrefix + rawThumbnailUrl
+            : rawThumbnailUrl;
+    }
+
+    private static IElement? FindPackageListContainer(IParentNode documentRoot)
+    {
+        var packageListContainers = documentRoot
+            .QuerySelectorAll(".emoticon-list")
+            .Where(container => container.QuerySelector(".emoticon-col a[href^='/e/']") is not null)
+            .ToList();
+
+        return packageListContainers.FirstOrDefault(container => container.QuerySelector(".sort") is not null)
+            ?? packageListContainers.LastOrDefault();
     }
 }

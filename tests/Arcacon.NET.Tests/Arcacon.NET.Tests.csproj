@@ -27,4 +27,13 @@
     <ProjectReference Include="..\..\src\Arcacon.NET\Arcacon.NET.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="TestData\ArcaconMain.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\ArcaconMain - BySales.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

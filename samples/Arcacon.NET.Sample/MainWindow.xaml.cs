@@ -71,7 +71,7 @@ public sealed partial class MainWindow : Window
             var result = await _client.GetNewListAsync();
             AppendLog($"최신 목록 (페이지 {result.CurrentPage}/{result.TotalPages}) — {result.Packages.Count}개:");
             foreach (var package in result.Packages)
-                AppendLog($"  [{package.PackageIndex}] {package.Title} by {package.SellerName} (판매: {package.SaleCount:N0})");
+                AppendLog($"  [{package.PackageIndex}] {package.Title} by {package.SellerName} (판매: {package.SaleCount:N0}, 썸네일: {package.ThumbnailUrl})");
         }
         catch (Exception exception)
         {
@@ -93,7 +93,7 @@ public sealed partial class MainWindow : Window
             var result = await _client.GetHotListAsync();
             AppendLog($"인기 목록 (페이지 {result.CurrentPage}/{result.TotalPages}) — {result.Packages.Count}개:");
             foreach (var package in result.Packages)
-                AppendLog($"  [{package.PackageIndex}] {package.Title} by {package.SellerName} (판매: {package.SaleCount:N0})");
+                AppendLog($"  [{package.PackageIndex}] {package.Title} by {package.SellerName} (판매: {package.SaleCount:N0}, 썸네일: {package.ThumbnailUrl})");
         }
         catch (Exception exception)
         {

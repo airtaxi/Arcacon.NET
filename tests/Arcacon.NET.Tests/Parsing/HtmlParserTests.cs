@@ -89,6 +89,8 @@ public class HtmlParserTests
         </body>
         </html>
         """;
+    private static readonly string SearchResultHtmlWithPopularSection = File.ReadAllText(GetTestDataPath("ArcaconMain.html"));
+    private static readonly string SearchResultHtmlBySales = File.ReadAllText(GetTestDataPath("ArcaconMain - BySales.html"));
 
     [Fact]
     public async Task ParsePackageDetailAsync_WithValidHtml_ParsesTitle()
@@ -255,6 +257,25 @@ public class HtmlParserTests
     }
 
     [Fact]
+    public async Task ParseSearchResultAsync_WithPopularSection_IgnoresPopularPackages()
+    {
+        var result = await HtmlParser.ParseSearchResultAsync(SearchResultHtmlWithPopularSection, 1);
+
+        Assert.Equal([51674, 51673, 51672, 51671, 51670], result.Packages.Take(5).Select(package => package.PackageIndex));
+        Assert.DoesNotContain(result.Packages.Take(5), package => package.PackageIndex is 51385 or 48724 or 50022 or 51522 or 51060);
+    }
+
+    [Fact]
+    public async Task ParseSearchResultAsync_WithBySalesHtml_UsesActualThumbnailInsteadOfStarIcon()
+    {
+        var result = await HtmlParser.ParseSearchResultAsync(SearchResultHtmlBySales, 1);
+
+        Assert.Equal(37347, result.Packages[0].PackageIndex);
+        Assert.Equal("https://ac-p1.namu.la/20240226sac/ea7f0d3cb63c9d4442d098fa7027f6cf213cfa90141bd6a47c08d3ab5f4a87aa.gif?expires=1777597200&key=caHUZ8ZrLM9qOjHJJUmhrQ", result.Packages[0].ThumbnailUrl);
+        Assert.DoesNotContain("/static/assets/images/star-", result.Packages[0].ThumbnailUrl);
+    }
+
+    [Fact]
     public async Task ParseSearchResultAsync_WithEmptyHtml_ThrowsArcaconParsingException()
     {
         await Assert.ThrowsAsync<ArcaconParsingException>(() =>
@@ -400,4 +421,6 @@ public class HtmlParserTests
 
         Assert.Empty(result);
     }
+
+    private static string GetTestDataPath(string fileName) => Path.Combine(AppContext.BaseDirectory, "TestData", fileName);
 }
