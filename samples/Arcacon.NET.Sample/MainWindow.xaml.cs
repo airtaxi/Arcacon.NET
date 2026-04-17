@@ -266,7 +266,7 @@ public sealed partial class MainWindow : Window
             AppendLog($"태그: {string.Join(", ", detail.Tags)}");
             AppendLog($"스티커 수: {detail.IconCount}개");
             foreach (var sticker in detail.Stickers)
-                AppendLog($"  [{sticker.Id}] {sticker.ImageUrl}");
+                AppendLog($"  [{sticker.Id}] media={sticker.ImageUrl} video={sticker.VideoUrl ?? "null"} poster={sticker.PosterThumbnailUrl ?? "null"}");
         }
         catch (Exception exception)
         {

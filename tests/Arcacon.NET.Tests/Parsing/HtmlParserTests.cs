@@ -124,9 +124,11 @@ public class HtmlParserTests
         Assert.Equal(2, result.Stickers.Count);
         Assert.Equal(101, result.Stickers[0].Id);
         Assert.Equal("https://ac.namu.la/img/1.webp", result.Stickers[0].ImageUrl);
+        Assert.Null(result.Stickers[0].VideoUrl);
         Assert.Null(result.Stickers[0].PosterThumbnailUrl);
         Assert.Equal(102, result.Stickers[1].Id);
         Assert.Equal("https://ac.namu.la/video/2.mp4", result.Stickers[1].ImageUrl);
+        Assert.Equal("https://ac.namu.la/video/2.mp4", result.Stickers[1].VideoUrl);
         Assert.Equal("https://ac.namu.la/thumb/2.webp", result.Stickers[1].PosterThumbnailUrl);
     }
 

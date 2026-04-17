@@ -14,6 +14,9 @@ public class ArcaconSticker
     /// <summary>스티커 이미지 URL</summary>
     public string ImageUrl { get; set; } = string.Empty;
 
+    /// <summary>비디오 스티커의 원본 비디오 URL (이미지 스티커는 null)</summary>
+    public string? VideoUrl { get; set; }
+
     /// <summary>비디오 스티커의 poster 썸네일 URL (이미지 스티커는 null)</summary>
     public string? PosterThumbnailUrl { get; set; }
 

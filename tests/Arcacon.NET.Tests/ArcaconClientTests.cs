@@ -13,7 +13,13 @@ public class ArcaconClientTests
             Stickers =
             [
                 new ArcaconSticker { Id = 101, ImageUrl = "https://example.com/old-101.webp" },
-                new ArcaconSticker { Id = 102, ImageUrl = "https://example.com/old-102.mp4", PosterThumbnailUrl = "https://example.com/poster-102.webp" }
+                new ArcaconSticker
+                {
+                    Id = 102,
+                    ImageUrl = "https://example.com/old-102.mp4",
+                    VideoUrl = "https://example.com/original-102.mp4",
+                    PosterThumbnailUrl = "https://example.com/poster-102.webp"
+                }
             ]
         };
 
@@ -28,6 +34,7 @@ public class ArcaconClientTests
 
         Assert.Equal("https://cdn.example.com/updated-101.webp", packageDetail.Stickers[0].ImageUrl);
         Assert.Equal("https://cdn.example.com/updated-102.mp4", packageDetail.Stickers[1].ImageUrl);
+        Assert.Equal("https://example.com/original-102.mp4", packageDetail.Stickers[1].VideoUrl);
         Assert.Equal("https://example.com/poster-102.webp", packageDetail.Stickers[1].PosterThumbnailUrl);
     }
 

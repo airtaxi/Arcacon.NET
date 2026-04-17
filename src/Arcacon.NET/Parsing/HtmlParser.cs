@@ -54,15 +54,16 @@ internal static class HtmlParser
             if (string.IsNullOrEmpty(rawUrl)) continue;
 
             var imageUrl = NormalizeMediaUrl(rawUrl) ?? string.Empty;
-            var posterThumbnailUrl = element.LocalName.Equals("video", StringComparison.OrdinalIgnoreCase)
-                ? NormalizeMediaUrl(element.GetAttribute("poster"))
-                : null;
+            var isVideoElement = element.LocalName.Equals("video", StringComparison.OrdinalIgnoreCase);
+            var videoUrl = isVideoElement ? imageUrl : null;
+            var posterThumbnailUrl = isVideoElement ? NormalizeMediaUrl(element.GetAttribute("poster")) : null;
 
             _ = int.TryParse(element.GetAttribute("data-id"), out var stickerId);
             stickers.Add(new ArcaconSticker
             {
                 Id = stickerId,
                 ImageUrl = imageUrl,
+                VideoUrl = videoUrl,
                 PosterThumbnailUrl = posterThumbnailUrl,
                 SortNumber = index + 1
             });
