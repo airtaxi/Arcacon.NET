@@ -117,6 +117,8 @@ foreach (var sticker in detail.Stickers)
     Console.WriteLine($"[{sticker.Id}] media={sticker.ImageUrl}, poster={sticker.PosterThumbnailUrl ?? "null"}");
 ```
 
+`GetPackageDetailAsync()`가 반환하는 `sticker.ImageUrl`은 패키지 공개 API(`/api/emoticon/{packageIndex}`) 기준 URL로 보정됩니다.
+
 ### 구독 목록 조회
 
 ```csharp

@@ -70,6 +70,27 @@ internal class ArcaconHttpClient(HttpClient httpClient)
     }
 
     /// <summary>
+    /// 공개 아카콘 API에서 패키지 스티커 목록을 가져온다.
+    /// </summary>
+    public async Task<string> GetPublicPackageStickerPayloadAsync(int packageId, CancellationToken cancellationToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{BaseUrl}/api/emoticon/{packageId}");
+        request.Headers.Add("Accept", "application/json, text/plain, */*");
+        request.Headers.Add("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7");
+        request.Headers.Add("Accept-Encoding", "gzip, deflate");
+        request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0");
+        request.Headers.Add("Priority", "u=0, i");
+        request.Headers.Add("Referer", $"{BaseUrl}/e/{packageId}");
+
+        var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+        if (response.StatusCode == HttpStatusCode.NotFound) throw new ArcaconNotFoundException($"패키지를 찾을 수 없습니다: {packageId}");
+
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// 아카콘 설정 페이지 HTML을 가져온다 (로그인 필요).
     /// </summary>
     public async Task<string> GetSettingsPageHtmlAsync(CancellationToken cancellationToken)

@@ -1,4 +1,6 @@
+using System.Text.Json;
 using Arcacon.NET.Browser;
+using Arcacon.NET.Exceptions;
 using Arcacon.NET.Http;
 using Arcacon.NET.Models;
 using Arcacon.NET.Parsing;
@@ -11,6 +13,11 @@ namespace Arcacon.NET;
 /// </summary>
 public class ArcaconClient : IArcaconClient, IAsyncDisposable
 {
+    private static readonly JsonSerializerOptions s_javaScriptObjectNotationSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly ArcaconHttpClient _httpClient;
     private readonly HttpClient? _innerHttpClient;
     private readonly bool _ownsHttpClient;
@@ -122,7 +129,11 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         if (!IsLoggedIn) throw new InvalidOperationException("패키지 상세 조회는 로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         var html = await _httpClient.GetPackagePageHtmlAsync(packageIndex, cancellationToken).ConfigureAwait(false);
-        return await HtmlParser.ParsePackageDetailAsync(html, packageIndex).ConfigureAwait(false);
+        var publicPackageStickerPayload = await _httpClient.GetPublicPackageStickerPayloadAsync(packageIndex, cancellationToken).ConfigureAwait(false);
+        var packageDetail = await HtmlParser.ParsePackageDetailAsync(html, packageIndex).ConfigureAwait(false);
+
+        ApplyPublicStickerImageUrlsFromPublicPayload(packageDetail, publicPackageStickerPayload);
+        return packageDetail;
     }
 
     /// <inheritdoc />
@@ -204,6 +215,41 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         return await HtmlParser.ParsePopularPackagesAsync(html).ConfigureAwait(false);
     }
 
+    internal static void ApplyPublicStickerImageUrlsFromPublicPayload(
+        ArcaconPackageDetail packageDetail,
+        string publicPackageStickerPayload)
+    {
+        ArgumentNullException.ThrowIfNull(packageDetail);
+        if (string.IsNullOrWhiteSpace(publicPackageStickerPayload))
+            throw new ArcaconParsingException("공개 아카콘 API 응답이 비어있습니다.");
+
+        var publicArcaconStickers = JsonSerializer.Deserialize<List<PublicArcaconStickerPayload>>(
+            publicPackageStickerPayload,
+            s_javaScriptObjectNotationSerializerOptions)
+            ?? throw new ArcaconParsingException("공개 아카콘 API 응답을 해석할 수 없습니다.");
+
+        var imageUrlByStickerId = publicArcaconStickers
+            .Where(publicArcaconSticker => publicArcaconSticker.Id > 0 && !string.IsNullOrWhiteSpace(publicArcaconSticker.ImageUrl))
+            .ToDictionary(
+                publicArcaconSticker => publicArcaconSticker.Id,
+                publicArcaconSticker => NormalizePublicStickerImageUrl(publicArcaconSticker.ImageUrl!));
+
+        var missingStickerIds = packageDetail.Stickers
+            .Where(sticker => !imageUrlByStickerId.ContainsKey(sticker.Id))
+            .Select(sticker => sticker.Id)
+            .ToArray();
+
+        if (missingStickerIds.Length > 0)
+            throw new ArcaconParsingException($"공개 아카콘 API 응답에 일부 스티커가 없습니다: {string.Join(", ", missingStickerIds)}");
+
+        foreach (var sticker in packageDetail.Stickers)
+            sticker.ImageUrl = imageUrlByStickerId[sticker.Id];
+    }
+
+    private static string NormalizePublicStickerImageUrl(string imageUrl) => imageUrl.StartsWith("//", StringComparison.Ordinal)
+        ? $"https:{imageUrl}"
+        : imageUrl;
+
     private static HttpClient CreateDefaultHttpClient()
     {
         var handler = new WinHttpHandler { AutomaticDecompression = System.Net.DecompressionMethods.All };
@@ -225,5 +271,12 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
 
         GC.SuppressFinalize(this);
         return ValueTask.CompletedTask;
+    }
+
+    private sealed class PublicArcaconStickerPayload
+    {
+        public int Id { get; set; }
+
+        public string? ImageUrl { get; set; }
     }
 }
