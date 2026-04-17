@@ -17,6 +17,11 @@
 		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Platform)' == 'AnyCPU' Or '$(Platform)' == 'Any CPU'">
+		<WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+		<PublishAot>false</PublishAot>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />

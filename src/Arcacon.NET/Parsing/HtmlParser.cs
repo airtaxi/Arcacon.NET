@@ -53,15 +53,17 @@ internal static class HtmlParser
             var rawUrl = element.GetAttribute("data-src") ?? element.GetAttribute("src") ?? string.Empty;
             if (string.IsNullOrEmpty(rawUrl)) continue;
 
-            var imageUrl = rawUrl.StartsWith("//", StringComparison.Ordinal)
-                ? HttpsPrefix + rawUrl
-                : rawUrl;
+            var imageUrl = NormalizeMediaUrl(rawUrl) ?? string.Empty;
+            var posterThumbnailUrl = element.LocalName.Equals("video", StringComparison.OrdinalIgnoreCase)
+                ? NormalizeMediaUrl(element.GetAttribute("poster"))
+                : null;
 
             _ = int.TryParse(element.GetAttribute("data-id"), out var stickerId);
             stickers.Add(new ArcaconSticker
             {
                 Id = stickerId,
                 ImageUrl = imageUrl,
+                PosterThumbnailUrl = posterThumbnailUrl,
                 SortNumber = index + 1
             });
         }
@@ -187,7 +189,7 @@ internal static class HtmlParser
                 result.Add(new ArcaconSubscribedPackage
                 {
                     PackageIndex = packageIndex,
-                    ThumbnailUrl = $"{HttpsPrefix}//arca.live/api/emoticon/{packageIndex}/thumb",
+                    ThumbnailUrl = BuildPackageThumbnailUrl(packageIndex),
                     IsActive = true
                 });
             }
@@ -203,7 +205,7 @@ internal static class HtmlParser
                 result.Add(new ArcaconSubscribedPackage
                 {
                     PackageIndex = packageIndex,
-                    ThumbnailUrl = $"{HttpsPrefix}//arca.live/api/emoticon/{packageIndex}/thumb",
+                    ThumbnailUrl = BuildPackageThumbnailUrl(packageIndex),
                     IsActive = false
                 });
             }
@@ -260,7 +262,6 @@ internal static class HtmlParser
         var titleElement = packageAnchor.QuerySelector(".title");
         var makerElement = packageAnchor.QuerySelector(".maker");
         var saleCountElement = packageAnchor.QuerySelector(".count span");
-        var thumbnailUrl = ExtractThumbnailUrlFromPackageAnchor(packageAnchor);
 
         _ = int.TryParse(saleCountElement?.TextContent.Trim().Replace(",", ""), out var saleCount);
 
@@ -269,22 +270,21 @@ internal static class HtmlParser
             PackageIndex = packageIndex,
             Title = titleElement?.TextContent.Trim() ?? string.Empty,
             SellerName = makerElement?.TextContent.Trim() ?? string.Empty,
-            ThumbnailUrl = thumbnailUrl,
+            ThumbnailUrl = BuildPackageThumbnailUrl(packageIndex),
             SaleCount = saleCount
         };
     }
 
-    private static string ExtractThumbnailUrlFromPackageAnchor(IElement packageAnchor)
-    {
-        var thumbnailElement = packageAnchor.QuerySelector(".emoticon > img[loading='lazy'][src]")
-            ?? packageAnchor.QuerySelector(".emoticon img[loading='lazy'][src]")
-            ?? packageAnchor.QuerySelector(".emoticon > img[src]")
-            ?? packageAnchor.QuerySelector(".emoticon img[src]");
+    private static string BuildPackageThumbnailUrl(int packageIndex) =>
+        $"{HttpsPrefix}//arca.live/api/emoticon/{packageIndex}/thumb";
 
-        var rawThumbnailUrl = thumbnailElement?.GetAttribute("src") ?? string.Empty;
-        return rawThumbnailUrl.StartsWith("//", StringComparison.Ordinal)
-            ? HttpsPrefix + rawThumbnailUrl
-            : rawThumbnailUrl;
+    private static string? NormalizeMediaUrl(string? rawUrl)
+    {
+        if (string.IsNullOrWhiteSpace(rawUrl)) return null;
+
+        return rawUrl.StartsWith("//", StringComparison.Ordinal)
+            ? HttpsPrefix + rawUrl
+            : rawUrl;
     }
 
     private static IElement? FindPopularPackageListContainer(IParentNode documentRoot) => documentRoot

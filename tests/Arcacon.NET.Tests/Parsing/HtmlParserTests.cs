@@ -27,7 +27,7 @@ public class HtmlParserTests
         </form>
         <div class="emoticons-wrapper">
             <img class="emoticon" src="//ac.namu.la/img/1.webp" data-id="101" />
-            <video class="emoticon" data-src="//ac.namu.la/video/2.mp4" data-id="102"></video>
+            <video class="emoticon" data-src="//ac.namu.la/video/2.mp4" poster="//ac.namu.la/thumb/2.webp" data-id="102"></video>
         </div>
         </body>
         </html>
@@ -124,8 +124,10 @@ public class HtmlParserTests
         Assert.Equal(2, result.Stickers.Count);
         Assert.Equal(101, result.Stickers[0].Id);
         Assert.Equal("https://ac.namu.la/img/1.webp", result.Stickers[0].ImageUrl);
+        Assert.Null(result.Stickers[0].PosterThumbnailUrl);
         Assert.Equal(102, result.Stickers[1].Id);
         Assert.Equal("https://ac.namu.la/video/2.mp4", result.Stickers[1].ImageUrl);
+        Assert.Equal("https://ac.namu.la/thumb/2.webp", result.Stickers[1].PosterThumbnailUrl);
     }
 
     [Fact]
@@ -224,7 +226,7 @@ public class HtmlParserTests
         Assert.Equal(10001, first.PackageIndex);
         Assert.Equal("첫 번째 아카콘", first.Title);
         Assert.Equal("제작자A", first.SellerName);
-        Assert.Equal("https://ac.namu.la/thumb/1.webp", first.ThumbnailUrl);
+        Assert.Equal("https://arca.live/api/emoticon/10001/thumb", first.ThumbnailUrl);
         Assert.Equal(500, first.SaleCount);
     }
 
@@ -266,13 +268,22 @@ public class HtmlParserTests
     }
 
     [Fact]
-    public async Task ParseSearchResultAsync_WithBySalesHtml_UsesActualThumbnailInsteadOfStarIcon()
+    public async Task ParseSearchResultAsync_WithBySalesHtml_UsesThumbnailApiEndpoint()
     {
         var result = await HtmlParser.ParseSearchResultAsync(SearchResultHtmlBySales, 1);
 
         Assert.Equal(37347, result.Packages[0].PackageIndex);
-        Assert.Equal("https://ac-p1.namu.la/20240226sac/ea7f0d3cb63c9d4442d098fa7027f6cf213cfa90141bd6a47c08d3ab5f4a87aa.gif?expires=1777597200&key=caHUZ8ZrLM9qOjHJJUmhrQ", result.Packages[0].ThumbnailUrl);
-        Assert.DoesNotContain("/static/assets/images/star-", result.Packages[0].ThumbnailUrl);
+        Assert.Equal("https://arca.live/api/emoticon/37347/thumb", result.Packages[0].ThumbnailUrl);
+    }
+
+    [Fact]
+    public async Task ParseSearchResultAsync_WithBySalesHtml_UsesThumbnailApiEndpointWhenPackageCardHasVideo()
+    {
+        var result = await HtmlParser.ParseSearchResultAsync(SearchResultHtmlBySales, 1);
+        var package = result.Packages.Single(package => package.PackageIndex == 3065);
+
+        Assert.Equal("연설 노무현콘", package.Title);
+        Assert.Equal("https://arca.live/api/emoticon/3065/thumb", package.ThumbnailUrl);
     }
 
     [Fact]
@@ -284,13 +295,12 @@ public class HtmlParserTests
     }
 
     [Fact]
-    public async Task ParsePopularPackagesAsync_WithBySalesHtml_UsesLazyThumbnailInsteadOfStarIcon()
+    public async Task ParsePopularPackagesAsync_WithBySalesHtml_UsesThumbnailApiEndpoint()
     {
         var result = await HtmlParser.ParsePopularPackagesAsync(SearchResultHtmlBySales);
 
         Assert.Equal(51385, result[0].PackageIndex);
-        Assert.Equal("https://ac-p1.namu.la/20260330sac/bd225134f2b53f7c0cb4a55413a29ee9a42e2a591693247235e069ea4d5ed256.gif?expires=1777597200&key=y9_04fYXtY3rdiXsy6RaZA", result[0].ThumbnailUrl);
-        Assert.DoesNotContain("/static/assets/images/star-", result[0].ThumbnailUrl);
+        Assert.Equal("https://arca.live/api/emoticon/51385/thumb", result[0].ThumbnailUrl);
     }
 
     [Fact]

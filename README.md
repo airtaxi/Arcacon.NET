@@ -112,6 +112,9 @@ Console.WriteLine($"제목: {detail.Title}");
 Console.WriteLine($"제작자: {detail.SellerName}");
 Console.WriteLine($"스티커 수: {detail.Stickers.Count}개");
 Console.WriteLine($"태그: {string.Join(", ", detail.Tags)}");
+
+foreach (var sticker in detail.Stickers)
+    Console.WriteLine($"[{sticker.Id}] media={sticker.ImageUrl}, poster={sticker.PosterThumbnailUrl ?? "null"}");
 ```
 
 ### 구독 목록 조회
@@ -218,7 +221,7 @@ var result = await client.SearchAsync("스텔라소라", cancellationToken: canc
 | `ArcaconSearchResult` | 검색 결과 (패키지 목록 + 페이지네이션) |
 | `ArcaconPackageSummary` | 패키지 요약 (검색 결과 항목) |
 | `ArcaconPackageDetail` | 패키지 상세 (스티커 목록 + 태그 포함) |
-| `ArcaconSticker` | 개별 스티커 정보 |
+| `ArcaconSticker` | 개별 스티커 정보 (`ImageUrl`, 비디오용 `PosterThumbnailUrl`) |
 | `ArcaconSubscribedPackage` | 구독(보유) 아카콘 패키지 정보 |
 | `ArcaconSearchSort` | 정렬 방식 (Hot, New) |
 | `ArcaconSearchType` | 검색 유형 (Title, NickName, Tags) |

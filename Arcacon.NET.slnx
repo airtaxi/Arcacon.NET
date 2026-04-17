@@ -11,6 +11,7 @@
   </Configurations>
   <Folder Name="/samples/">
     <Project Path="samples/Arcacon.NET.Sample/Arcacon.NET.Sample.csproj">
+      <Platform Solution="*|Any CPU" Project="x64" />
       <Platform Solution="*|ARM64" Project="ARM64" />
       <Platform Solution="*|x64" Project="x64" />
       <Platform Solution="*|x86" Project="x86" />
