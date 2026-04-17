@@ -1,0 +1,189 @@
+<Window
+    x:Class="Arcacon.NET.Sample.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Arcacon.NET.Sample.ViewModels"
+    Title="Arcacon.NET Sample">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto,260">
+
+        <!--  TitleBar  -->
+        <TitleBar
+            x:Name="AppTitleBar"
+            Title="Arcacon.NET"
+            Grid.Row="0"
+            Subtitle="Sample" />
+
+        <!--  액션 카드  -->
+        <Grid
+            Grid.Row="1"
+            Padding="16,8,16,0"
+            ColumnDefinitions="*,*,2*"
+            ColumnSpacing="12">
+
+            <!--  목록 조회 카드  -->
+            <Border
+                Grid.Column="0"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Text="목록 조회" />
+                    <Button
+                        x:Name="LoginButton"
+                        HorizontalAlignment="Stretch"
+                        Click="OnLoginButtonClicked"
+                        Content="로그인"
+                        Style="{StaticResource AccentButtonStyle}" />
+                    <Button
+                        x:Name="GetNewListButton"
+                        HorizontalAlignment="Stretch"
+                        Click="OnGetNewListButtonClicked"
+                        Content="최신 목록"
+                        IsEnabled="False" />
+                    <Button
+                        x:Name="GetHotListButton"
+                        HorizontalAlignment="Stretch"
+                        Click="OnGetHotListButtonClicked"
+                        Content="인기 목록"
+                        IsEnabled="False" />
+                    <Button
+                        x:Name="GetSubscribedPackagesButton"
+                        HorizontalAlignment="Stretch"
+                        Click="OnGetSubscribedPackagesButtonClicked"
+                        Content="구독 목록"
+                        IsEnabled="False" />
+                </StackPanel>
+            </Border>
+
+            <!--  패키지 상세 카드  -->
+            <Border
+                Grid.Column="1"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Text="패키지 상세" />
+                    <TextBox x:Name="PackageIdTextBox" PlaceholderText="패키지 ID" />
+                    <Button
+                        x:Name="GetPackageDetailButton"
+                        HorizontalAlignment="Stretch"
+                        Click="OnGetPackageDetailButtonClicked"
+                        Content="상세 조회"
+                        IsEnabled="False" />
+                </StackPanel>
+            </Border>
+
+            <!--  검색 카드  -->
+            <Border
+                Grid.Column="2"
+                Padding="16"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Text="검색" />
+                    <TextBox x:Name="SearchQueryTextBox" PlaceholderText="검색어" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <ComboBox
+                            x:Name="SearchTypeComboBox"
+                            Grid.Column="0"
+                            HorizontalAlignment="Stretch"
+                            Header="검색 유형"
+                            SelectedIndex="0">
+                            <ComboBoxItem Content="제목" />
+                            <ComboBoxItem Content="닉네임" />
+                            <ComboBoxItem Content="태그" />
+                        </ComboBox>
+                        <ComboBox
+                            x:Name="SearchSortComboBox"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            Header="정렬"
+                            SelectedIndex="0">
+                            <ComboBoxItem Content="판매순" />
+                            <ComboBoxItem Content="최신순" />
+                        </ComboBox>
+                    </Grid>
+                    <Button
+                        x:Name="SearchButton"
+                        HorizontalAlignment="Stretch"
+                        Click="OnSearchButtonClicked"
+                        Content="검색"
+                        IsEnabled="False"
+                        Style="{StaticResource AccentButtonStyle}" />
+                </StackPanel>
+            </Border>
+
+        </Grid>
+
+        <!--  WebView2: 로그인 진행 중에만 표시  -->
+        <WebView2
+            x:Name="WebView2Control"
+            Grid.Row="2"
+            Visibility="Collapsed" />
+
+        <!--  구분선  -->
+        <Border
+            Grid.Row="3"
+            Height="1"
+            Margin="16,8,16,0"
+            Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+        <!--  로그 영역  -->
+        <Grid Grid.Row="4" RowDefinitions="Auto,*">
+            <Grid
+                Grid.Row="0"
+                Padding="16,6,8,4"
+                ColumnDefinitions="*,Auto">
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Text="로그" />
+                <Button
+                    Grid.Column="1"
+                    Click="OnClearLogButtonClicked"
+                    Content="지우기" />
+            </Grid>
+            <ScrollViewer x:Name="LogScrollViewer" Grid.Row="1">
+                <ItemsRepeater x:Name="LogItemsRepeater" Margin="16,0,16,16">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="vm:LogViewModel">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock
+                                    FontSize="12"
+                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                    Text="{x:Bind TimestampText}" />
+                                <TextBlock
+                                    FontSize="12"
+                                    IsTextSelectionEnabled="True"
+                                    Text="{x:Bind Message}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
+        </Grid>
+
+    </Grid>
+</Window>

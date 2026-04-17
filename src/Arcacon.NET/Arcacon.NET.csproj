@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Arcacon.NET</PackageId>
+    <Description>비공식 아카라이브 아카콘(Arcacon) .NET 라이브러리. WPF, WinForms, Console 등 일반 .NET 앱에서 사용하세요. WinUI 3 앱은 Arcacon.NET.WinRT 패키지를 사용하세요.</Description>
+    <!-- WPF/WinForms/Console 앱용: CsWinRT projection 미사용 -->
+    <WebView2EnableCsWinRTProjection>false</WebView2EnableCsWinRTProjection>
+  </PropertyGroup>
+
+</Project>
