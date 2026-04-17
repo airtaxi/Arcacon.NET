@@ -6,6 +6,8 @@
 [![NuGet (WinRT)](https://img.shields.io/nuget/v/Arcacon.NET.WinRT.svg?label=NuGet%20(WinRT))](https://www.nuget.org/packages/Arcacon.NET.WinRT)
 [![Windows](https://img.shields.io/badge/platform-Windows-blue.svg)](https://www.microsoft.com/windows)
 
+![Showcase](https://raw.githubusercontent.com/airtaxi/Arcacon.NET/main/.github/Showcase.gif)
+
 ## 소개
 
 Arcacon.NET은 아카라이브의 아카콘(Arcacon) 스티커를 프로그래밍적으로 검색, 조회, 다운로드할 수 있는 .NET 라이브러리입니다.
