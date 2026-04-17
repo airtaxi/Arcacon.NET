@@ -6,7 +6,7 @@
 [![NuGet (WinRT)](https://img.shields.io/nuget/v/Arcacon.NET.WinRT.svg?label=NuGet%20(WinRT))](https://www.nuget.org/packages/Arcacon.NET.WinRT)
 [![Windows](https://img.shields.io/badge/platform-Windows-blue.svg)](https://www.microsoft.com/windows)
 
-![Showcase](https://raw.githubusercontent.com/airtaxi/Arcacon.NET/main/.github/Showcase.gif)
+![Showcase](https://raw.githubusercontent.com/airtaxi/Arcacon.NET/master/.github/Showcase.gif)
 
 ## 소개
 
