@@ -17,7 +17,7 @@
 `src/Directory.Build.props`의 `<Version>` 값을 변경합니다.
 
 ```xml
-<Version>0.2.0</Version>
+<Version>0.3.0</Version>
 ```
 
 ---

@@ -274,8 +274,8 @@ public class HtmlParserTests
     {
         var result = await HtmlParser.ParseSearchResultAsync(SearchResultHtmlBySales, 1);
 
-        Assert.Equal(37347, result.Packages[0].PackageIndex);
-        Assert.Equal("https://arca.live/api/emoticon/37347/thumb", result.Packages[0].ThumbnailUrl);
+        Assert.Equal(17802, result.Packages[0].PackageIndex);
+        Assert.Equal("https://arca.live/api/emoticon/17802/thumb", result.Packages[0].ThumbnailUrl);
     }
 
     [Fact]
