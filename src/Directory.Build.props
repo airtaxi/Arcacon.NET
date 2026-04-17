@@ -4,7 +4,8 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>Howon Lee</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>arcalive;arcacon</PackageTags>

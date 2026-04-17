@@ -7,4 +7,8 @@
     <WebView2EnableCsWinRTProjection>false</WebView2EnableCsWinRTProjection>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
 </Project>

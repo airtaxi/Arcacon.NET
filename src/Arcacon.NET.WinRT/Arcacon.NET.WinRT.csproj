@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Arcacon.NET 프로젝트의 소스를 링크로 참조 (파일 중복 없이 동일 소스 공유) -->
     <Compile Include="../Arcacon.NET/**/*.cs"
              Exclude="../Arcacon.NET/obj/**/*.cs" />
