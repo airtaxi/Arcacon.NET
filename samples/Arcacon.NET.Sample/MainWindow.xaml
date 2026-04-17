@@ -38,30 +38,69 @@
                         FontSize="13"
                         FontWeight="SemiBold"
                         Text="목록 조회" />
-                    <Button
-                        x:Name="LoginButton"
-                        HorizontalAlignment="Stretch"
-                        Click="OnLoginButtonClicked"
-                        Content="로그인"
-                        Style="{StaticResource AccentButtonStyle}" />
-                    <Button
-                        x:Name="GetNewListButton"
-                        HorizontalAlignment="Stretch"
-                        Click="OnGetNewListButtonClicked"
-                        Content="최신 목록"
-                        IsEnabled="False" />
-                    <Button
-                        x:Name="GetHotListButton"
-                        HorizontalAlignment="Stretch"
-                        Click="OnGetHotListButtonClicked"
-                        Content="인기 목록"
-                        IsEnabled="False" />
-                    <Button
-                        x:Name="GetSubscribedPackagesButton"
-                        HorizontalAlignment="Stretch"
-                        Click="OnGetSubscribedPackagesButtonClicked"
-                        Content="구독 목록"
-                        IsEnabled="False" />
+                    <Grid
+                        ColumnDefinitions="*,*,*"
+                        ColumnSpacing="8"
+                        RowDefinitions="Auto,Auto,Auto"
+                        RowSpacing="8">
+                        <Button
+                            x:Name="LoginButton"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            HorizontalAlignment="Stretch"
+                            Click="OnLoginButtonClicked"
+                            Content="로그인"
+                            Style="{StaticResource AccentButtonStyle}" />
+                        <Button
+                            x:Name="GetNewListButton"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            HorizontalAlignment="Stretch"
+                            Click="OnGetNewListButtonClicked"
+                            Content="최신"
+                            IsEnabled="False" />
+                        <Button
+                            x:Name="GetHotListButton"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            Click="OnGetHotListButtonClicked"
+                            Content="인기"
+                            IsEnabled="False" />
+                        <Button
+                            x:Name="GetSubscribedPackagesButton"
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            HorizontalAlignment="Stretch"
+                            Click="OnGetSubscribedPackagesButtonClicked"
+                            Content="구독"
+                            IsEnabled="False" />
+                        <Button
+                            x:Name="GetDailyPopularButton"
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            HorizontalAlignment="Stretch"
+                            Click="OnGetDailyPopularButtonClicked"
+                            Content="일간"
+                            IsEnabled="False" />
+                        <Button
+                            x:Name="GetWeeklyPopularButton"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            Click="OnGetWeeklyPopularButtonClicked"
+                            Content="주간"
+                            IsEnabled="False" />
+                        <Button
+                            x:Name="GetMonthlyPopularButton"
+                            Grid.Row="2"
+                            Grid.Column="2"
+                            HorizontalAlignment="Stretch"
+                            Click="OnGetMonthlyPopularButtonClicked"
+                            Content="월간"
+                            IsEnabled="False" />
+                    </Grid>
                 </StackPanel>
             </Border>
 

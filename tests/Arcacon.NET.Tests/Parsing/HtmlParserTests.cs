@@ -276,6 +276,24 @@ public class HtmlParserTests
     }
 
     [Fact]
+    public async Task ParsePopularPackagesAsync_WithSampleHtml_ReturnsDailyPopularTopFive()
+    {
+        var result = await HtmlParser.ParsePopularPackagesAsync(SearchResultHtmlWithPopularSection);
+
+        Assert.Equal([51385, 48724, 50022, 51522, 51060], result.Select(package => package.PackageIndex));
+    }
+
+    [Fact]
+    public async Task ParsePopularPackagesAsync_WithBySalesHtml_UsesLazyThumbnailInsteadOfStarIcon()
+    {
+        var result = await HtmlParser.ParsePopularPackagesAsync(SearchResultHtmlBySales);
+
+        Assert.Equal(51385, result[0].PackageIndex);
+        Assert.Equal("https://ac-p1.namu.la/20260330sac/bd225134f2b53f7c0cb4a55413a29ee9a42e2a591693247235e069ea4d5ed256.gif?expires=1777597200&key=y9_04fYXtY3rdiXsy6RaZA", result[0].ThumbnailUrl);
+        Assert.DoesNotContain("/static/assets/images/star-", result[0].ThumbnailUrl);
+    }
+
+    [Fact]
     public async Task ParseSearchResultAsync_WithEmptyHtml_ThrowsArcaconParsingException()
     {
         await Assert.ThrowsAsync<ArcaconParsingException>(() =>

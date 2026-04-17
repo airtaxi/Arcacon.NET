@@ -52,6 +52,24 @@ public interface IArcaconClient
     Task<ArcaconSearchResult> GetNewListAsync(int page = 1, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 상단 일간 인기 아카콘 5개를 가져온다 (로그인 필요).
+    /// </summary>
+    /// <param name="cancellationToken">취소 토큰</param>
+    Task<IReadOnlyList<ArcaconPackageSummary>> GetDailyPopularAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 상단 주간 인기 아카콘 5개를 가져온다 (로그인 필요).
+    /// </summary>
+    /// <param name="cancellationToken">취소 토큰</param>
+    Task<IReadOnlyList<ArcaconPackageSummary>> GetWeeklyPopularAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 상단 월간 인기 아카콘 5개를 가져온다 (로그인 필요).
+    /// </summary>
+    /// <param name="cancellationToken">취소 토큰</param>
+    Task<IReadOnlyList<ArcaconPackageSummary>> GetMonthlyPopularAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// 아카콘 패키지 상세 정보를 가져온다 (로그인 필요).
     /// </summary>
     /// <param name="packageIndex">패키지 고유 번호</param>

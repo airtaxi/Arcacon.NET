@@ -105,29 +105,12 @@ internal static class HtmlParser
             var packageListContainer = FindPackageListContainer(document);
             var packageAnchors = packageListContainer?.QuerySelectorAll(".emoticon-col a[href^='/e/']")
                 ?? document.QuerySelectorAll(".emoticon-col a[href^='/e/']");
-            foreach (var anchor in packageAnchors)
+            foreach (var packageAnchor in packageAnchors)
             {
-                var href = anchor.GetAttribute("href") ?? string.Empty;
-                var packageIndex = ExtractPackageIndexFromHref(href);
-                if (packageIndex <= 0) continue;
+                var packageSummary = CreatePackageSummaryFromPackageAnchor(packageAnchor);
+                if (packageSummary is null) continue;
 
-                var titleElement = anchor.QuerySelector(".title");
-                var makerElement = anchor.QuerySelector(".maker");
-                var saleCountElement = anchor.QuerySelector(".count span");
-
-                var thumbnailUrl = ExtractThumbnailUrlFromPackageAnchor(anchor);
-
-                _ = int.TryParse(
-                    saleCountElement?.TextContent.Trim().Replace(",", ""), out var saleCount);
-
-                result.Packages.Add(new ArcaconPackageSummary
-                {
-                    PackageIndex = packageIndex,
-                    Title = titleElement?.TextContent.Trim() ?? string.Empty,
-                    SellerName = makerElement?.TextContent.Trim() ?? string.Empty,
-                    ThumbnailUrl = thumbnailUrl,
-                    SaleCount = saleCount
-                });
+                result.Packages.Add(packageSummary);
             }
 
             // 페이지네이션: .pagination .page-link[href] 에서 p= 파라미터 최댓값
@@ -143,6 +126,41 @@ internal static class HtmlParser
             result.TotalPages = maxPage > 0 ? maxPage : (result.Packages.Count > 0 ? 1 : 0);
 
             return result;
+        }
+        catch (ArcaconParsingException) { throw; }
+        catch (Exception exception)
+        {
+            throw new ArcaconParsingException("HTML 파싱 중 오류가 발생했습니다.", exception);
+        }
+    }
+
+    /// <summary>
+    /// 아카콘 목록/검색 페이지 HTML에서 상단 인기 아카콘 5개를 파싱한다.
+    /// </summary>
+    /// <param name="html">페이지 HTML 문자열</param>
+    public static async Task<IReadOnlyList<ArcaconPackageSummary>> ParsePopularPackagesAsync(string html)
+    {
+        if (string.IsNullOrWhiteSpace(html))
+            throw new ArcaconParsingException("파싱할 HTML이 비어있습니다.");
+
+        try
+        {
+            var parser = new AngleSharp.Html.Parser.HtmlParser();
+            using var document = await parser.ParseDocumentAsync(html).ConfigureAwait(false);
+
+            var popularPackageListContainer = FindPopularPackageListContainer(document);
+            var popularPackageAnchors = popularPackageListContainer?.QuerySelectorAll(".emoticon-col a[href^='/e/']").ToArray() ?? [];
+            var popularPackages = new List<ArcaconPackageSummary>(popularPackageAnchors.Length);
+
+            foreach (var popularPackageAnchor in popularPackageAnchors.Take(5))
+            {
+                var popularPackage = CreatePackageSummaryFromPackageAnchor(popularPackageAnchor);
+                if (popularPackage is null) continue;
+
+                popularPackages.Add(popularPackage);
+            }
+
+            return popularPackages;
         }
         catch (ArcaconParsingException) { throw; }
         catch (Exception exception)
@@ -245,18 +263,49 @@ internal static class HtmlParser
         return 0;
     }
 
-    private static string ExtractThumbnailUrlFromPackageAnchor(IElement anchor)
+    private static ArcaconPackageSummary? CreatePackageSummaryFromPackageAnchor(IElement packageAnchor)
     {
-        var thumbnailElement = anchor.QuerySelector(".emoticon > img[loading='lazy'][src]")
-            ?? anchor.QuerySelector(".emoticon img[loading='lazy'][src]")
-            ?? anchor.QuerySelector(".emoticon > img[src]")
-            ?? anchor.QuerySelector(".emoticon img[src]");
+        var href = packageAnchor.GetAttribute("href") ?? string.Empty;
+        var packageIndex = ExtractPackageIndexFromHref(href);
+        if (packageIndex <= 0) return null;
+
+        var titleElement = packageAnchor.QuerySelector(".title");
+        var makerElement = packageAnchor.QuerySelector(".maker");
+        var saleCountElement = packageAnchor.QuerySelector(".count span");
+        var thumbnailUrl = ExtractThumbnailUrlFromPackageAnchor(packageAnchor);
+
+        _ = int.TryParse(
+            saleCountElement?.TextContent.Trim().Replace(",", ""), out var saleCount);
+
+        return new ArcaconPackageSummary
+        {
+            PackageIndex = packageIndex,
+            Title = titleElement?.TextContent.Trim() ?? string.Empty,
+            SellerName = makerElement?.TextContent.Trim() ?? string.Empty,
+            ThumbnailUrl = thumbnailUrl,
+            SaleCount = saleCount
+        };
+    }
+
+    private static string ExtractThumbnailUrlFromPackageAnchor(IElement packageAnchor)
+    {
+        var thumbnailElement = packageAnchor.QuerySelector(".emoticon > img[loading='lazy'][src]")
+            ?? packageAnchor.QuerySelector(".emoticon img[loading='lazy'][src]")
+            ?? packageAnchor.QuerySelector(".emoticon > img[src]")
+            ?? packageAnchor.QuerySelector(".emoticon img[src]");
 
         var rawThumbnailUrl = thumbnailElement?.GetAttribute("src") ?? string.Empty;
         return rawThumbnailUrl.StartsWith("//", StringComparison.Ordinal)
             ? HttpsPrefix + rawThumbnailUrl
             : rawThumbnailUrl;
     }
+
+    private static IElement? FindPopularPackageListContainer(IParentNode documentRoot) =>
+        documentRoot
+            .QuerySelectorAll(".emoticon-list")
+            .FirstOrDefault(container =>
+                container.QuerySelector(".rank") is not null
+                && container.QuerySelector(".emoticon-col a[href^='/e/']") is not null);
 
     private static IElement? FindPackageListContainer(IParentNode documentRoot)
     {

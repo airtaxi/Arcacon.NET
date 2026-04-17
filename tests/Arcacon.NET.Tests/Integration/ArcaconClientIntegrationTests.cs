@@ -68,6 +68,30 @@ public class ArcaconClientIntegrationTests
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => client.GetNewListAsync(0));
     }
 
+    [Fact]
+    public async Task GetDailyPopularAsync_WithoutLogin_ThrowsInvalidOperationException()
+    {
+        await using var client = new ArcaconClient();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => client.GetDailyPopularAsync());
+    }
+
+    [Fact]
+    public async Task GetWeeklyPopularAsync_WithoutLogin_ThrowsInvalidOperationException()
+    {
+        await using var client = new ArcaconClient();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => client.GetWeeklyPopularAsync());
+    }
+
+    [Fact]
+    public async Task GetMonthlyPopularAsync_WithoutLogin_ThrowsInvalidOperationException()
+    {
+        await using var client = new ArcaconClient();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => client.GetMonthlyPopularAsync());
+    }
+
     [Fact(Skip = "WebView2 UI 환경에서 직접 실행해야 합니다.")]
     public async Task GetNewListAsync_AfterLogin_ReturnsNonEmptyList()
     {

@@ -42,6 +42,9 @@ public sealed partial class MainWindow : Window
             AppendLog("로그인 성공!");
             GetNewListButton.IsEnabled = true;
             GetHotListButton.IsEnabled = true;
+            GetDailyPopularButton.IsEnabled = true;
+            GetWeeklyPopularButton.IsEnabled = true;
+            GetMonthlyPopularButton.IsEnabled = true;
             SearchButton.IsEnabled = true;
             GetPackageDetailButton.IsEnabled = true;
             GetSubscribedPackagesButton.IsEnabled = true;
@@ -105,6 +108,66 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private async void OnGetDailyPopularButtonClicked(object sender, RoutedEventArgs e)
+    {
+        GetDailyPopularButton.IsEnabled = false;
+        AppendLog("일간 인기 아카콘 5개를 조회합니다...");
+
+        try
+        {
+            var popularPackages = await _client.GetDailyPopularAsync();
+            AppendPopularPackages("일간 인기 5개", popularPackages);
+        }
+        catch (Exception exception)
+        {
+            AppendLog($"오류: {exception.Message}");
+        }
+        finally
+        {
+            GetDailyPopularButton.IsEnabled = true;
+        }
+    }
+
+    private async void OnGetWeeklyPopularButtonClicked(object sender, RoutedEventArgs e)
+    {
+        GetWeeklyPopularButton.IsEnabled = false;
+        AppendLog("주간 인기 아카콘 5개를 조회합니다...");
+
+        try
+        {
+            var popularPackages = await _client.GetWeeklyPopularAsync();
+            AppendPopularPackages("주간 인기 5개", popularPackages);
+        }
+        catch (Exception exception)
+        {
+            AppendLog($"오류: {exception.Message}");
+        }
+        finally
+        {
+            GetWeeklyPopularButton.IsEnabled = true;
+        }
+    }
+
+    private async void OnGetMonthlyPopularButtonClicked(object sender, RoutedEventArgs e)
+    {
+        GetMonthlyPopularButton.IsEnabled = false;
+        AppendLog("월간 인기 아카콘 5개를 조회합니다...");
+
+        try
+        {
+            var popularPackages = await _client.GetMonthlyPopularAsync();
+            AppendPopularPackages("월간 인기 5개", popularPackages);
+        }
+        catch (Exception exception)
+        {
+            AppendLog($"오류: {exception.Message}");
+        }
+        finally
+        {
+            GetMonthlyPopularButton.IsEnabled = true;
+        }
+    }
+
     private async void OnSearchButtonClicked(object sender, RoutedEventArgs e)
     {
         var query = SearchQueryTextBox.Text.Trim();
@@ -146,6 +209,13 @@ public sealed partial class MainWindow : Window
     }
 
     private void OnClearLogButtonClicked(object sender, RoutedEventArgs e) => _logItems.Clear();
+
+    private void AppendPopularPackages(string title, IReadOnlyList<ArcaconPackageSummary> popularPackages)
+    {
+        AppendLog($"{title} — {popularPackages.Count}개:");
+        foreach (var popularPackage in popularPackages)
+            AppendLog($"  [{popularPackage.PackageIndex}] {popularPackage.Title} by {popularPackage.SellerName} (판매: {popularPackage.SaleCount:N0}, 썸네일: {popularPackage.ThumbnailUrl})");
+    }
 
     private async void OnGetSubscribedPackagesButtonClicked(object sender, RoutedEventArgs e)
     {

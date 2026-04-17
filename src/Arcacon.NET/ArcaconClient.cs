@@ -94,6 +94,18 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
     }
 
     /// <inheritdoc />
+    public Task<IReadOnlyList<ArcaconPackageSummary>> GetDailyPopularAsync(CancellationToken cancellationToken = default) =>
+        GetPopularPackagesAsync("/e/?", cancellationToken);
+
+    /// <inheritdoc />
+    public Task<IReadOnlyList<ArcaconPackageSummary>> GetWeeklyPopularAsync(CancellationToken cancellationToken = default) =>
+        GetPopularPackagesAsync("/e/?rank=weekly", cancellationToken);
+
+    /// <inheritdoc />
+    public Task<IReadOnlyList<ArcaconPackageSummary>> GetMonthlyPopularAsync(CancellationToken cancellationToken = default) =>
+        GetPopularPackagesAsync("/e/?rank=monthly", cancellationToken);
+
+    /// <inheritdoc />
     public async Task<IReadOnlyList<ArcaconSubscribedPackage>> GetSubscribedPackagesAsync(
         bool includeInactive = false,
         CancellationToken cancellationToken = default)
@@ -192,6 +204,17 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         ArcaconSearchType.Tags => "tag",
         _ => "title"
     };
+
+    private async Task<IReadOnlyList<ArcaconPackageSummary>> GetPopularPackagesAsync(
+        string relativeUrl,
+        CancellationToken cancellationToken)
+    {
+        if (!IsLoggedIn)
+            throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+
+        var html = await _httpClient.GetListPageHtmlAsync(relativeUrl, cancellationToken).ConfigureAwait(false);
+        return await HtmlParser.ParsePopularPackagesAsync(html).ConfigureAwait(false);
+    }
 
     private static HttpClient CreateDefaultHttpClient()
     {
