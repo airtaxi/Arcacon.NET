@@ -19,8 +19,7 @@ public static class ArcaconFileNameHelper
     /// <summary>
     /// 스티커의 파일명을 생성한다 (확장자 포함).
     /// </summary>
-    public static string GetStickerFileName(Models.ArcaconSticker sticker)
-        => $"{sticker.Id}{sticker.Extension}";
+    public static string GetStickerFileName(Models.ArcaconSticker sticker) => $"{sticker.Id}{sticker.Extension}";
 
     /// <summary>
     /// URL에서 파일 확장자를 추론한다. 추론 불가 시 .webp를 반환한다.

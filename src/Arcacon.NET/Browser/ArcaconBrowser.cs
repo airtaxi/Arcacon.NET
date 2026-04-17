@@ -54,11 +54,8 @@ internal static class ArcaconBrowser
             // await 이후에도 호출자의 SynchronizationContext(UI 스레드)를 유지한다.
             await tcs.Task;
         }
-        finally
-        {
-            // 정상 완료·취소·예외 모든 경우에 이벤트 핸들러 해제 (중복 해제는 무해함)
-            webView.NavigationCompleted -= OnNavigationCompleted;
-        }
+        // 정상 완료·취소·예외 모든 경우에 이벤트 핸들러 해제 (중복 해제는 무해함)
+        finally { webView.NavigationCompleted -= OnNavigationCompleted; }
 
         return await webView.CookieManager.GetCookiesAsync("https://arca.live");
     }

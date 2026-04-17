@@ -59,8 +59,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
     {
         if (string.IsNullOrWhiteSpace(query)) throw new ArgumentException("검색어가 비어있습니다.", nameof(query));
         if (page < 1) throw new ArgumentOutOfRangeException(nameof(page), "페이지 번호는 1 이상이어야 합니다.");
-        if (!IsLoggedIn)
-            throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (!IsLoggedIn) throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         var target = ConvertSearchTypeToTarget(searchType);
         var encodedQuery = Uri.EscapeDataString(query);
@@ -75,8 +74,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
     public async Task<ArcaconSearchResult> GetHotListAsync(int page = 1, CancellationToken cancellationToken = default)
     {
         if (page < 1) throw new ArgumentOutOfRangeException(nameof(page), "페이지 번호는 1 이상이어야 합니다.");
-        if (!IsLoggedIn)
-            throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (!IsLoggedIn) throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         var html = await _httpClient.GetListPageHtmlAsync($"/e/?sort=rank&p={page}", cancellationToken).ConfigureAwait(false);
         return await HtmlParser.ParseSearchResultAsync(html, page).ConfigureAwait(false);
@@ -86,32 +84,27 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
     public async Task<ArcaconSearchResult> GetNewListAsync(int page = 1, CancellationToken cancellationToken = default)
     {
         if (page < 1) throw new ArgumentOutOfRangeException(nameof(page), "페이지 번호는 1 이상이어야 합니다.");
-        if (!IsLoggedIn)
-            throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (!IsLoggedIn) throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         var html = await _httpClient.GetListPageHtmlAsync($"/e/?p={page}", cancellationToken).ConfigureAwait(false);
         return await HtmlParser.ParseSearchResultAsync(html, page).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public Task<IReadOnlyList<ArcaconPackageSummary>> GetDailyPopularAsync(CancellationToken cancellationToken = default) =>
-        GetPopularPackagesAsync("/e/?", cancellationToken);
+    public Task<IReadOnlyList<ArcaconPackageSummary>> GetDailyPopularAsync(CancellationToken cancellationToken = default) => GetPopularPackagesAsync("/e/?", cancellationToken);
 
     /// <inheritdoc />
-    public Task<IReadOnlyList<ArcaconPackageSummary>> GetWeeklyPopularAsync(CancellationToken cancellationToken = default) =>
-        GetPopularPackagesAsync("/e/?rank=weekly", cancellationToken);
+    public Task<IReadOnlyList<ArcaconPackageSummary>> GetWeeklyPopularAsync(CancellationToken cancellationToken = default) => GetPopularPackagesAsync("/e/?rank=weekly", cancellationToken);
 
     /// <inheritdoc />
-    public Task<IReadOnlyList<ArcaconPackageSummary>> GetMonthlyPopularAsync(CancellationToken cancellationToken = default) =>
-        GetPopularPackagesAsync("/e/?rank=monthly", cancellationToken);
+    public Task<IReadOnlyList<ArcaconPackageSummary>> GetMonthlyPopularAsync(CancellationToken cancellationToken = default) => GetPopularPackagesAsync("/e/?rank=monthly", cancellationToken);
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<ArcaconSubscribedPackage>> GetSubscribedPackagesAsync(
         bool includeInactive = false,
         CancellationToken cancellationToken = default)
     {
-        if (!IsLoggedIn)
-            throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (!IsLoggedIn) throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         var html = await _httpClient.GetSettingsPageHtmlAsync(cancellationToken).ConfigureAwait(false);
         var packages = await HtmlParser.ParseSubscribedPackagesAsync(html).ConfigureAwait(false);
@@ -126,8 +119,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
     {
         if (packageIndex <= 0) throw new ArgumentOutOfRangeException(nameof(packageIndex), "패키지 번호는 양수여야 합니다.");
 
-        if (!IsLoggedIn)
-            throw new InvalidOperationException("패키지 상세 조회는 로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (!IsLoggedIn) throw new InvalidOperationException("패키지 상세 조회는 로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         var html = await _httpClient.GetPackagePageHtmlAsync(packageIndex, cancellationToken).ConfigureAwait(false);
         return await HtmlParser.ParsePackageDetailAsync(html, packageIndex).ConfigureAwait(false);
@@ -139,8 +131,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(sticker);
-        if (string.IsNullOrEmpty(sticker.ImageUrl))
-            throw new ArgumentException("스티커의 ImageUrl이 비어있습니다.", nameof(sticker));
+        if (string.IsNullOrEmpty(sticker.ImageUrl)) throw new ArgumentException("스티커의 ImageUrl이 비어있습니다.", nameof(sticker));
 
         return await _httpClient.DownloadImageBytesAsync(sticker.ImageUrl, cancellationToken).ConfigureAwait(false);
     }
@@ -151,8 +142,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(sticker);
-        if (string.IsNullOrEmpty(sticker.ImageUrl))
-            throw new ArgumentException("스티커의 ImageUrl이 비어있습니다.", nameof(sticker));
+        if (string.IsNullOrEmpty(sticker.ImageUrl)) throw new ArgumentException("스티커의 ImageUrl이 비어있습니다.", nameof(sticker));
 
         return await _httpClient.DownloadImageStreamAsync(sticker.ImageUrl, cancellationToken).ConfigureAwait(false);
     }
@@ -165,8 +155,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         CancellationToken cancellationToken = default)
     {
         if (packageIndex <= 0) throw new ArgumentOutOfRangeException(nameof(packageIndex), "패키지 번호는 양수여야 합니다.");
-        if (string.IsNullOrWhiteSpace(outputDirectory))
-            throw new ArgumentException("출력 디렉토리가 비어있습니다.", nameof(outputDirectory));
+        if (string.IsNullOrWhiteSpace(outputDirectory)) throw new ArgumentException("출력 디렉토리가 비어있습니다.", nameof(outputDirectory));
 
         var packageDetail = await GetPackageDetailAsync(packageIndex, cancellationToken).ConfigureAwait(false);
 
@@ -209,8 +198,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
         string relativeUrl,
         CancellationToken cancellationToken)
     {
-        if (!IsLoggedIn)
-            throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (!IsLoggedIn) throw new InvalidOperationException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         var html = await _httpClient.GetListPageHtmlAsync(relativeUrl, cancellationToken).ConfigureAwait(false);
         return await HtmlParser.ParsePopularPackagesAsync(html).ConfigureAwait(false);
@@ -218,10 +206,7 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
 
     private static HttpClient CreateDefaultHttpClient()
     {
-        var handler = new WinHttpHandler
-        {
-            AutomaticDecompression = System.Net.DecompressionMethods.All
-        };
+        var handler = new WinHttpHandler { AutomaticDecompression = System.Net.DecompressionMethods.All };
         var client = new HttpClient(handler);
         client.DefaultRequestHeaders.Add("User-Agent",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36");

@@ -25,8 +25,7 @@ internal static class HtmlParser
         using var document = await parser.ParseDocumentAsync(html).ConfigureAwait(false);
 
         var titleElement = document.QuerySelector(".emoticon-info .title");
-        if (titleElement is null)
-            throw new ArcaconParsingException("패키지 상세 페이지에서 제목 요소를 찾을 수 없습니다.");
+        if (titleElement is null) throw new ArcaconParsingException("패키지 상세 페이지에서 제목 요소를 찾을 수 없습니다.");
 
         var sellerNameElement = document.QuerySelector(".emoticon-info .author");
         var dateElement = document.QuerySelector(".emoticon-info .date time");
@@ -128,10 +127,7 @@ internal static class HtmlParser
             return result;
         }
         catch (ArcaconParsingException) { throw; }
-        catch (Exception exception)
-        {
-            throw new ArcaconParsingException("HTML 파싱 중 오류가 발생했습니다.", exception);
-        }
+        catch (Exception exception) { throw new ArcaconParsingException("HTML 파싱 중 오류가 발생했습니다.", exception); }
     }
 
     /// <summary>
@@ -140,8 +136,7 @@ internal static class HtmlParser
     /// <param name="html">페이지 HTML 문자열</param>
     public static async Task<IReadOnlyList<ArcaconPackageSummary>> ParsePopularPackagesAsync(string html)
     {
-        if (string.IsNullOrWhiteSpace(html))
-            throw new ArcaconParsingException("파싱할 HTML이 비어있습니다.");
+        if (string.IsNullOrWhiteSpace(html)) throw new ArcaconParsingException("파싱할 HTML이 비어있습니다.");
 
         try
         {
@@ -163,10 +158,7 @@ internal static class HtmlParser
             return popularPackages;
         }
         catch (ArcaconParsingException) { throw; }
-        catch (Exception exception)
-        {
-            throw new ArcaconParsingException("HTML 파싱 중 오류가 발생했습니다.", exception);
-        }
+        catch (Exception exception) { throw new ArcaconParsingException("HTML 파싱 중 오류가 발생했습니다.", exception); }
     }
 
     /// <summary>
@@ -175,8 +167,7 @@ internal static class HtmlParser
     /// <param name="html">설정 페이지 HTML 문자열</param>
     public static async Task<IReadOnlyList<ArcaconSubscribedPackage>> ParseSubscribedPackagesAsync(string html)
     {
-        if (string.IsNullOrWhiteSpace(html))
-            throw new ArcaconParsingException("파싱할 HTML이 비어있습니다.");
+        if (string.IsNullOrWhiteSpace(html)) throw new ArcaconParsingException("파싱할 HTML이 비어있습니다.");
 
         try
         {
@@ -220,10 +211,7 @@ internal static class HtmlParser
             return result;
         }
         catch (ArcaconParsingException) { throw; }
-        catch (Exception exception)
-        {
-            throw new ArcaconParsingException("HTML 파싱 중 오류가 발생했습니다.", exception);
-        }
+        catch (Exception exception) { throw new ArcaconParsingException("HTML 파싱 중 오류가 발생했습니다.", exception); }
     }
 
     private static string ParseRegistrationDateShort(string? datetimeAttribute)
@@ -274,8 +262,7 @@ internal static class HtmlParser
         var saleCountElement = packageAnchor.QuerySelector(".count span");
         var thumbnailUrl = ExtractThumbnailUrlFromPackageAnchor(packageAnchor);
 
-        _ = int.TryParse(
-            saleCountElement?.TextContent.Trim().Replace(",", ""), out var saleCount);
+        _ = int.TryParse(saleCountElement?.TextContent.Trim().Replace(",", ""), out var saleCount);
 
         return new ArcaconPackageSummary
         {
@@ -300,12 +287,11 @@ internal static class HtmlParser
             : rawThumbnailUrl;
     }
 
-    private static IElement? FindPopularPackageListContainer(IParentNode documentRoot) =>
-        documentRoot
-            .QuerySelectorAll(".emoticon-list")
-            .FirstOrDefault(container =>
-                container.QuerySelector(".rank") is not null
-                && container.QuerySelector(".emoticon-col a[href^='/e/']") is not null);
+    private static IElement? FindPopularPackageListContainer(IParentNode documentRoot) => documentRoot
+        .QuerySelectorAll(".emoticon-list")
+        .FirstOrDefault(container =>
+            container.QuerySelector(".rank") is not null
+            && container.QuerySelector(".emoticon-col a[href^='/e/']") is not null);
 
     private static IElement? FindPackageListContainer(IParentNode documentRoot)
     {

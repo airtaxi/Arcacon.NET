@@ -37,8 +37,7 @@ internal class ArcaconHttpClient(HttpClient httpClient)
         var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
         var finalUrl = response.RequestMessage?.RequestUri?.AbsoluteUri ?? string.Empty;
-        if (finalUrl.Contains("/u/login") || response.StatusCode == HttpStatusCode.Unauthorized)
-            throw new ArcaconLoginException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (finalUrl.Contains("/u/login") || response.StatusCode == HttpStatusCode.Unauthorized) throw new ArcaconLoginException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -60,14 +59,11 @@ internal class ArcaconHttpClient(HttpClient httpClient)
         var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
         var finalUrl = response.RequestMessage?.RequestUri?.AbsoluteUri ?? string.Empty;
-        if (finalUrl.Contains("/u/login") || response.StatusCode == HttpStatusCode.Unauthorized)
-            throw new ArcaconLoginException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (finalUrl.Contains("/u/login") || response.StatusCode == HttpStatusCode.Unauthorized) throw new ArcaconLoginException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
-        if (response.StatusCode == HttpStatusCode.Forbidden)
-            throw new ArcaconLoginException("접근이 거부되었습니다. 세션이 만료되었거나 이 패키지에 접근 권한이 없습니다.");
+        if (response.StatusCode == HttpStatusCode.Forbidden) throw new ArcaconLoginException("접근이 거부되었습니다. 세션이 만료되었거나 이 패키지에 접근 권한이 없습니다.");
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            throw new ArcaconNotFoundException($"패키지를 찾을 수 없습니다: {packageId}");
+        if (response.StatusCode == HttpStatusCode.NotFound) throw new ArcaconNotFoundException($"패키지를 찾을 수 없습니다: {packageId}");
 
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
@@ -89,8 +85,7 @@ internal class ArcaconHttpClient(HttpClient httpClient)
         var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
         var finalUrl = response.RequestMessage?.RequestUri?.AbsoluteUri ?? string.Empty;
-        if (finalUrl.Contains("/u/login") || response.StatusCode == HttpStatusCode.Unauthorized)
-            throw new ArcaconLoginException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
+        if (finalUrl.Contains("/u/login") || response.StatusCode == HttpStatusCode.Unauthorized) throw new ArcaconLoginException("로그인이 필요합니다. LoginAsync()를 먼저 호출해 주세요.");
 
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
