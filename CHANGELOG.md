@@ -1,5 +1,10 @@
 # 변경 이력
 
+## 0.3.2
+
+- 다운로드한 파일 시그니처를 기준으로 스티커 파일명을 결정하는 `ArcaconFileNameHelper.GetStickerFileName(sticker, imageData)` 오버로드를 공개 API로 변경했습니다.
+- README에 URL 확장자와 실제 파일 포맷이 다를 수 있는 경우 바이트 기반 파일명 API를 사용하도록 안내를 추가했습니다.
+
 ## 0.3.0
 
 - 목록/검색/인기 목록 썸네일을 `https://arca.live/api/emoticon/{packageIndex}/thumb` 기준으로 통일했습니다.

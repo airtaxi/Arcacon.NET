@@ -155,22 +155,29 @@ await client.DownloadPackageAsync(
     progress: progress);
 ```
 
-### 다운로드 파일명 예측
+### 다운로드 파일명 결정
 
-`ArcaconFileNameHelper`를 사용하면 다운로드 시 사용되는 파일명을 사전에 알 수 있습니다:
+`ArcaconFileNameHelper`를 사용하면 다운로드 파일명을 결정할 수 있습니다.
+
+아카라이브 CDN은 URL 경로의 확장자와 실제 응답 바이트 포맷이 다를 수 있습니다. 예를 들어 URL은 `.png`여도 실제 파일은 WebP로 내려올 수 있으므로, 다운로드한 파일을 저장하거나 저장된 파일명을 메타데이터에 기록할 때는 `GetStickerFileName(sticker, imageData)` 오버로드 사용을 권장합니다.
 
 ```csharp
 var detail = await client.GetPackageDetailAsync(packageIndex: 38576);
 
 foreach (var sticker in detail.Stickers)
 {
-    // DownloadPackageAsync에서 저장되는 파일명과 동일
-    string fileName = ArcaconFileNameHelper.GetStickerFileName(sticker);
+    var imageData = await client.DownloadStickerAsync(sticker);
+
+    // 실제 응답 바이트 기준 확장자를 사용
+    var fileName = ArcaconFileNameHelper.GetStickerFileName(sticker, imageData);
     Console.WriteLine(fileName);
 }
 
+// 다운로드 전 URL 기준 추정만 필요한 경우
+var predictedFileName = ArcaconFileNameHelper.GetStickerFileName(detail.Stickers[0]);
+
 // 파일명 안전 변환만 필요한 경우
-string safeName = ArcaconFileNameHelper.SanitizeFileName("잘못된/파일:명");
+var safeName = ArcaconFileNameHelper.SanitizeFileName("잘못된/파일:명");
 ```
 
 ### HttpClient 주입 (DI 패턴)
@@ -214,7 +221,8 @@ var result = await client.SearchAsync("스텔라소라", cancellationToken: canc
 | 클래스 | 메서드 | 설명 |
 |--------|--------|------|
 | `ArcaconFileNameHelper` | `SanitizeFileName` | 파일명에 사용할 수 없는 문자를 제거 |
-| `ArcaconFileNameHelper` | `GetStickerFileName` | 스티커 다운로드 시 사용되는 파일명 반환 |
+| `ArcaconFileNameHelper` | `GetStickerFileName(sticker)` | URL 기준으로 스티커 파일명 추정 |
+| `ArcaconFileNameHelper` | `GetStickerFileName(sticker, imageData)` | 다운로드한 파일 시그니처 기준으로 스티커 파일명 결정 |
 
 ### 모델
 

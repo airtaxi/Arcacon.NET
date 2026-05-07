@@ -178,8 +178,8 @@ public class ArcaconClient : IArcaconClient, IAsyncDisposable
             await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                var filePath = Path.Combine(packageDirectory, ArcaconFileNameHelper.GetStickerFileName(sticker));
                 var imageData = await _httpClient.DownloadImageBytesAsync(sticker.ImageUrl, cancellationToken).ConfigureAwait(false);
+                var filePath = Path.Combine(packageDirectory, ArcaconFileNameHelper.GetStickerFileName(sticker, imageData));
                 await File.WriteAllBytesAsync(filePath, imageData, cancellationToken).ConfigureAwait(false);
 
                 var currentCompleted = Interlocked.Increment(ref completed);

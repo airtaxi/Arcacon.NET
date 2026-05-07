@@ -81,6 +81,28 @@ public class ArcaconFileNameHelperTests
     }
 
     [Fact]
+    public void GetStickerFileName_WithPngUrlAndWebpBytes_ReturnsWebpExtension()
+    {
+        var sticker = new ArcaconSticker { Id = 7, ImageUrl = "https://example.com/images/7.png" };
+        var imageData = new byte[] { (byte)'R', (byte)'I', (byte)'F', (byte)'F', 0, 0, 0, 0, (byte)'W', (byte)'E', (byte)'B', (byte)'P' };
+
+        var result = ArcaconFileNameHelper.GetStickerFileName(sticker, imageData);
+
+        Assert.Equal("7.webp", result);
+    }
+
+    [Fact]
+    public void GetStickerFileName_WithUnknownBytes_ReturnsUrlExtension()
+    {
+        var sticker = new ArcaconSticker { Id = 7, ImageUrl = "https://example.com/images/7.png" };
+        var imageData = new byte[] { 1, 2, 3, 4 };
+
+        var result = ArcaconFileNameHelper.GetStickerFileName(sticker, imageData);
+
+        Assert.Equal("7.png", result);
+    }
+
+    [Fact]
     public void GetStickerFileName_WithEmptyUrl_ReturnsDefaultWebpExtension()
     {
         var sticker = new ArcaconSticker { Id = 1, ImageUrl = "" };
