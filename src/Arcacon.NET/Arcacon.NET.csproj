@@ -11,4 +11,10 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="AngleSharp" Version="1.6.0" />
+    <PackageReference Update="Microsoft.Web.WebView2" Version="1.0.4078.44" />
+    <PackageReference Update="System.Net.Http.WinHttpHandler" Version="10.0.10" />
+  </ItemGroup>
+
 </Project>
